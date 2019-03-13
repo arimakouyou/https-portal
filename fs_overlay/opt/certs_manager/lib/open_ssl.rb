@@ -34,7 +34,7 @@ module OpenSSL
 
   def self.ensure_dhparam
     unless File.exist? NAConfig.dhparam_path
-      system "mkdir -p #{File.dirname(NAConfig.dhparam_path)} && openssl dhparam -out #{NAConfig.dhparam_path} 2048"
+      system "mkdir -p #{File.dirname(NAConfig.dhparam_path)} && openssl dhparam -out #{NAConfig.dhparam_path} 4096"
     end
   end
 
