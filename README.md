@@ -387,7 +387,7 @@ The following are the available params with their default values:
 WORKER_PROCESSES=1
 WORKER_CONNECTIONS=1024
 KEEPALIVE_TIMEOUT=65
-GZIP=on
+GZIP=on                                 # can be 'off' (you need quotes)
 SERVER_TOKENS=off
 SERVER_NAMES_HASH_MAX_SIZE=512
 SERVER_NAMES_HASH_BUCKET_SIZE=32        # defaults to 32 or 64 based on your CPU
@@ -498,6 +498,7 @@ For most people the most important rate limits are:
 
 * 5 failed validation attempts per hour
 * 50 certificates per registered domain per week
+* 5 duplicated certificate per week (for renewal)
 
 If you want to use HTTPS for multiple sub-domains with a single certificate
 Let's Encrypt supports putting up to 100 domains in one certificate, however it
