@@ -2,9 +2,9 @@ FROM debian:stretch-slim
 
 MAINTAINER K.Arima "arimakouyou@gmail.com"
 
-ARG NGINX_VERSION=1.17.1
+ARG NGINX_VERSION=1.17.4
 ARG OPENSSL_URL=https://github.com/openssl/openssl
-ARG OPENSSL_BRANCH=OpenSSL_1_1_1c
+ARG OPENSSL_BRANCH=OpenSSL_1_1_1d
 
 RUN mkdir -p /usr/local/src \
     && apt update \
