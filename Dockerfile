@@ -2,7 +2,7 @@ FROM debian:stretch-slim
 
 MAINTAINER K.Arima "arimakouyou@gmail.com"
 
-ARG NGINX_VERSION=1.17.4
+ARG NGINX_VERSION=1.17.7
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 ARG OPENSSL_BRANCH=OpenSSL_1_1_1d
 
@@ -49,10 +49,11 @@ WORKDIR /root
 
 ENV S6_OVERLAY_VERSION v1.22.1.0
 ENV DOCKER_GEN_VERSION 0.7.4
+ENV ACME_TINY_VERSION 4.1.0
 
 ADD https://github.com/just-containers/s6-overlay/releases/download/$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz /tmp/
 ADD https://github.com/jwilder/docker-gen/releases/download/$DOCKER_GEN_VERSION/docker-gen-linux-amd64-$DOCKER_GEN_VERSION.tar.gz /tmp/
-ADD https://raw.githubusercontent.com/diafygi/acme-tiny/5350420d35177eda733d85096433a24e55f8d00e/acme_tiny.py /bin/acme_tiny
+ADD https://raw.githubusercontent.com/diafygi/acme-tiny/$ACME_TINY_VERSION/acme_tiny.py /bin/acme_tiny
 
 RUN groupadd -r nginx \
   && useradd -r -g nginx -s /bin/false -M nginx \
