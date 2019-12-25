@@ -75,7 +75,7 @@ RUN chmod a+x /bin/*
 
 VOLUME /var/lib/https-portal
 
-EXPOSE 80 443
+EXPOSE 80 443 8080
 
 STOPSIGNAL SIGTERM
 
