@@ -64,7 +64,7 @@ https-portal:
     - '443:443'
   environment:
     DOMAINS: 'example.com'
-    # STAGE: 'production'
+    # STAGE: 'production' # Don't use production until staging works
 ```
 
 Run the `docker-compose up` command in the same directory. A moment later you'll
@@ -87,7 +87,7 @@ https-portal:
   restart: always
   environment:
     DOMAINS: 'wordpress.example.com -> http://wordpress:80'
-    # STAGE: 'production'
+    # STAGE: 'production' # Don't use production until staging works
     # FORCE_RENEW: 'true'
 
 wordpress:
@@ -276,7 +276,7 @@ https-portal:
 You can also specify the stage (`local`, `staging`, or `production`) for each individual site, note that stages of individual sites overrides the global stage:
 
 ```yaml
-DOMAINS: 'wordpress.example.com -> http://wordpress #local, gitlab.example.com #production'
+DOMAINS: 'wordpress.example.com -> http://wordpress #local, gitlab.example.com #staging'
 ```
 
 ### Serving Static Sites
@@ -399,6 +399,7 @@ PROXY_CONNECT_TIMEOUT=60;
 PROXY_SEND_TIMEOUT=60;
 PROXY_READ_TIMEOUT=60;
 ACCESS_LOG=off;
+ACCESS_LOG_INCLUDE_HOST=off;            # include vhost in access log (useful for goaccess => use log-format=VCOMBINED)
 ```
 
 #### Websocket
@@ -428,6 +429,16 @@ You can use the follow environment variable to set HSTS header.
 
 ```
 HSTS_MAX_AGE=60  # in seconds
+```
+
+#### IPv6 connectivity
+
+**Notice:** IPv6 is only supported on Linux hosts.
+
+You can enable IPv6 connection using the following variable:
+
+```
+LISTEN_IPV6=true
 ```
 
 ### Override Nginx Configuration Files
