@@ -2,7 +2,7 @@ FROM debian:stretch-slim
 
 MAINTAINER K.Arima "arimakouyou@gmail.com"
 
-ARG NGINX_VERSION=1.17.8
+ARG NGINX_VERSION=1.17.9
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 ARG OPENSSL_BRANCH=OpenSSL_1_1_1d
 
