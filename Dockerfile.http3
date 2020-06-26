@@ -6,7 +6,11 @@ ARG PATCH_NGINX_VERSION=1.16
 ARG NGINX_VERSION=${PATCH_NGINX_VERSION}.1
 #ARG QUICHE_REVISION=c93c09fdb83db65a10264c3eb63d3400403e9d7e
 #ARG QUICHE_REVISION=12dce6df1bd4fc8ce5a1a63520d9d44387009e4b
-ARG QUICHE_REVISION=88267251719cbcdc5005ddc9eafccaae987630d4
+#ARG QUICHE_REVISION=88267251719cbcdc5005ddc9eafccaae987630d4
+#ARG QUICHE_REVISION=81adb4fa0e76412bc48ffde2d117156e4120a6d2
+ARG QUICHE_REVISION=bc876808647a47301a278005a41bc122260f7943
+
+
 
 RUN mkdir -p /usr/local/src \
     && apt update \
@@ -21,7 +25,7 @@ RUN mkdir -p /usr/local/src \
     && git checkout ${QUICHE_REVISION} \
     && cd /usr/local/src/nginx-${NGINX_VERSION} \
     && patch -p01 < ../quiche/extras/nginx/nginx-${PATCH_NGINX_VERSION}.patch
-    RUN cd /usr/local/src/nginx-${NGINX_VERSION} && PATH="/root/.cargo/bin:$PATH" && ./configure --with-openssl=../quiche/deps/boringssl --with-quiche=../quiche --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-http_v3_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fdebug-prefix-map=/data/builder/debuild/nginx-1.17.0/debian/debuild-base/nginx-1.17.0=. -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie' \
+    RUN cd /usr/local/src/nginx-${NGINX_VERSION} && PATH="/root/.cargo/bin:$PATH" && ./configure --with-openssl=../quiche/deps/boringssl --with-quiche=../quiche --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-http_v3_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fdebug-prefix-map=/data/builder/debuild/nginx-1.17.0/debian/debuild-base/nginx-1.17.0=. -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie' --build="quiche-$(git --git-dir=../quiche/.git rev-parse --short HEAD)" \
     && make \
     && make install \
     && mkdir -p /etc/nginx/conf.d
