@@ -237,7 +237,7 @@ https-portal:
 ### Hybrid Setup with Non-Dockerized Apps
 
 Web applications that run directly on the host machine instead of in Docker
-containers are available at `dockerhost`.
+containers are available at `host.docker.internal`. It also works with *Docker for Mac* and *Docker for Windows*.
 
 For instance, if an application accepts HTTP requests on port 8080 of the host
 machine, you can start HTTPS-PORTAL by:
@@ -246,7 +246,7 @@ machine, you can start HTTPS-PORTAL by:
 https-portal:
   # ...
   environment:
-    DOMAINS: 'example.com -> http://dockerhost:8080'
+    DOMAINS: 'example.com -> http://host.docker.internal:8080'
 ```
 
 #### Firewall settings ####
@@ -506,6 +506,38 @@ You can enable IPv6 connection using the following variable:
 
 ```
 LISTEN_IPV6=true
+```
+#### Other server block level configurations
+
+You can add additional `server` block level configurations to each domain:
+
+```yaml
+  environment:
+    ...
+    CUSTOM_NGINX_SERVER_CONFIG_BLOCK: add_header Strict-Transport-Security "max-age=60" always;
+```
+You can also make it multi-line:
+
+```yaml
+  environment:
+    ...
+    CUSTOM_NGINX_SERVER_CONFIG_BLOCK: |
+    	add_header Strict-Transport-Security "max-age=60" always;
+    	auth_basic "Password";	
+```
+
+The `CUSTOM_NGINX_SERVER_CONFIG_BLOCK` will be inserted after all other configuration blocks listed in section "Configure Nginx through Environment Variables", and it might conflict with other configurations.
+
+```
+# generated Nginx config:
+server {
+	listen 443 ssl http2;
+	... # (other configurations)
+	<%= CUSTOM_NGINX_SERVER_CONFIG_BLOCK %>
+	location / {
+		...
+	}
+}
 ```
 
 ### Override Nginx Configuration Files
