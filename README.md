@@ -23,6 +23,7 @@ Docker Hub page:
     - [Automatic Container Discovery](#automatic-container-discovery)
     - [Hybrid Setup with Non-Dockerized Apps](#hybrid-setup-with-non-dockerized-apps)
     - [Multiple Domains](#multiple-domains)
+    - [Multiple Upstreams](#multiple-upstreams)
     - [Serving Static Sites](#serving-static-sites)
     - [Share Certificates with Other Apps](#share-certificates-with-other-apps)
     - [HTTP Basic Auth](#http-basic-auth)
@@ -204,7 +205,7 @@ services:
 
 **Caveat**: Your web application must be created in the same network as HTTPS-PORTAL.
 
-Note that here is **no need** to link your web service to HTTPS-PORTAL, and you **shouldn't** put `example.com` in environment variable `DOMAINS` of HTTP-PORTAL.
+Note that here is **no need** to link your web service to HTTPS-PORTAL, and you **shouldn't** put `example.com` in environment variable `DOMAINS` of HTTPS-PORTAL.
 
 This feature allows you to deploy multiple web applications on the same host
 without restarting HTTPS-PORTAL itself or interrupting any other application while
@@ -281,6 +282,21 @@ You can also specify the stage (`local`, `staging`, or `production`) for each in
 ```yaml
 DOMAINS: 'wordpress.example.com -> http://wordpress #local, gitlab.example.com #staging'
 ```
+
+### Multiple Upstreams
+
+It's possible to define multiple upstreams for a domain for the purpose of load-balancing and/or HA.
+Just add additional upstreams separated by a pipe separator. Each upstream can have custom parameters.
+
+```yaml
+https-portal:
+  # ...
+  environment:
+    DOMAINS: 'wordpress.example.com -> http://wordpress1:80|wordpress2:80[weight=2 max_conns=100]
+```
+
+
+See [Nginx Upstream-Module](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#server) for possible parameters.
 
 ### Serving Static Sites
 
@@ -438,7 +454,7 @@ By default no Nginx access logs are written, and error logs are written to stdou
 With the environment variable `DEBUG=true` you can see more info printed about domain parsing, such as:
 
 ```
-DEBUG: name:'example.com' upstream:'' redirect_target:''
+DEBUG: name:'example.com' upstreams:'' redirect_target:''
 ```
 
 ### Other Configurations
@@ -645,7 +661,7 @@ https-portal:
 ```
 
 This is because with ACME v2 returns the full chain instead of a partial chain 
-with ACME v1. If you have old certificates stored, HTTPS-PORTAl may not be able 
+with ACME v1. If you have old certificates stored, HTTPS-PORTAL may not be able 
 to handle the case correctly. If you run into this issue, just `FORCE_RENEW` to 
 obtain a new set of certificates.
 
