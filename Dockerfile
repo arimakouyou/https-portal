@@ -2,9 +2,9 @@ FROM debian:buster-slim
 
 MAINTAINER K.Arima "arimakouyou@gmail.com"
 
-ARG NGINX_VERSION=1.19.3
+ARG NGINX_VERSION=1.19.6
 ARG OPENSSL_URL=https://github.com/openssl/openssl
-ARG OPENSSL_BRANCH=OpenSSL_1_1_1h
+ARG OPENSSL_BRANCH=OpenSSL_1_1_1i
 
 RUN mkdir -p /usr/local/src \
     && apt update \
