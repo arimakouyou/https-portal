@@ -28,6 +28,10 @@ class Domain
     File.join(dir, 'signed.ongoing.crt')
   end
 
+  def ongoing_key_path
+    File.join(dir, 'domain.ongoing.key')
+  end
+
   def key_path
     File.join(dir, 'domain.key')
   end
@@ -71,6 +75,10 @@ class Domain
 
   def name
     parsed_descriptor[:domain]
+  end
+
+  def env_format_name
+    name.upcase.tr('^A-Z0-9', '_')
   end
 
   def upstream_backend_name

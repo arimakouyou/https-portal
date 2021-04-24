@@ -16,7 +16,6 @@ server {
     ssl_certificate <%= domain.chained_cert_path %>;
     ssl_certificate_key <%= domain.key_path %>;
 
-    ssl_protocols TLSv1.2 TLSv1.3;
     ssl_session_cache shared:SSL:50m;
     ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256';
     ssl_prefer_server_ciphers on;
@@ -39,12 +38,6 @@ server {
        add_header Strict-Transport-Security "max-age=<%= ENV['HSTS_MAX_AGE'] %>" always;
     <% end %>
 
-
-    # Prevent Nginx from leaking other server configurations on the same machine
-    if ($host != $server_name) {
-        return 444;
-    }
-
     <% if domain.access_restriction %>
         <% domain.access_restriction.each do |ip| %>
             allow <%= ip %>;
@@ -59,6 +52,10 @@ server {
 
     <% if ENV['CUSTOM_NGINX_SERVER_CONFIG_BLOCK'] %>
         <%= ENV['CUSTOM_NGINX_SERVER_CONFIG_BLOCK'] %>
+    <% end %>
+
+    <% if ENV["CUSTOM_NGINX_#{domain.env_format_name}_CONFIG_BLOCK"] %>
+        <%= ENV["CUSTOM_NGINX_#{domain.env_format_name}_CONFIG_BLOCK"] %>
     <% end %>
 
     <% if domain.upstream %>
