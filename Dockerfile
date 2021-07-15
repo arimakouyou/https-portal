@@ -2,7 +2,7 @@ FROM debian:buster-slim
 
 MAINTAINER K.Arima "arimakouyou@gmail.com"
 
-ARG NGINX_VERSION=1.20.0
+ARG NGINX_VERSION=1.21.1
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 ARG OPENSSL_BRANCH=OpenSSL_1_1_1k
 
@@ -74,7 +74,7 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 
 RUN wget -q https://raw.githubusercontent.com/diafygi/acme-tiny/$ACME_TINY_VERSION/acme_tiny.py -O /bin/acme_tiny
 
-RUN rm /etc/nginx/conf.d/default.conf /etc/crontab
+#RUN rm /etc/nginx/conf.d/default.conf /etc/crontab
 
 COPY ./fs_overlay /
 
