@@ -32,7 +32,7 @@ module OpenSSL
 
     skip_conditions = File.exist?(domain.key_path) &&
                       File.exist?(domain.signed_cert_path) &&
-                      (domain.stage == 'local' || !self_signed?(domain.signed_cert_path)) &&
+                      !dummy?(domain.signed_cert_path) &&
                       expires_in_days(domain.signed_cert_path) > NAConfig.renew_margin_days
 
     !skip_conditions
@@ -51,16 +51,19 @@ module OpenSSL
   def self.self_sign(domain)
     puts "Self-signing test certificate for #{domain.name}"
 
-    create_ongoing_domain_key(domain)
-
     command = <<-EOC
-    openssl x509 -req -days 90 \
-      -in #{domain.csr_path} \
-      -signkey #{domain.ongoing_key_path} \
-      -out #{domain.signed_cert_path}
+    openssl req -x509 \
+      -newkey rsa:#{NAConfig.key_length} \
+      -nodes \
+      -out #{domain.ongoing_cert_path} \
+      -keyout #{domain.ongoing_key_path} \
+      -days 90 \
+      -batch \
+      -subj "/CN=#{domain.name}" \
+      -addext "extendedKeyUsage = serverAuth"
     EOC
 
-    system command && ACME.rename_ongoing_cert_and_key(domain)
+    (system command) && ACME.rename_ongoing_cert_and_key(domain)
   end
 
   def self.generate_dummy_certificate(dir, out_path, keyout_path)
@@ -82,7 +85,7 @@ module OpenSSL
 
   private
 
-  def self.self_signed?(pem)
+  def self.dummy?(pem)
     issuer = `openssl x509 -issuer -noout -in #{pem}`
     issuer.include? "default-server.example.com"
   end
