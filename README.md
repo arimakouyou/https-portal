@@ -30,7 +30,8 @@ Docker Hub page:
     - [Access Restriction](#access-restriction)
     - [Logging configuration](#logging-configuration)
     - [Debugging](#debugging)
-    - [Other configurations](#other-configurations)
+    - [Other Configurations](#other-configurations)
+    - [Internationalized Domain Names (IDN)](#internationalized-domain-names-idn)
   - [Advanced Usage](#advanced-usage)
     - [Configure Nginx through Environment Variables](#configure-nginx-through-environment-variables)
     - [Change Configuration Dynamically](#change-configuration-dynamically)
@@ -177,7 +178,9 @@ https-portal:
     DOMAINS: 'example.com => https://target.example.com' # Notice it's "=>" instead of the normal "->"
 ```
 
-All paths will be redirected to the target. E.g. `https://example.com/foo/bar` will be 301 redirected to `https://target.example.com/foo/bar`.
+All paths will be redirected to the target. E.g. `https://example.com/foo/bar` will be 307 redirected to `https://target.example.com/foo/bar`.
+
+If you want a permanent redirection, set the environment variable `REDIRECT_CODE=301`.
 
 A common use case is to redirect `www.example.com` to `example.com`. Configure your DNS, make both `www.example.com` and `example.com` resolve to the HTTPS-PORTAL host, and use the following compose:
 
@@ -290,8 +293,7 @@ You can specify multiple domains by splitting them with commas:
 https-portal:
   # ...
   environment:
-    DOMAINS: 'wordpress.example.com -> http://wordpress:80, gitlab.example.com
-    -> http://gitlab'
+    DOMAINS: 'wordpress.example.com -> http://wordpress:80, gitlab.example.com -> http://gitlab'
 ```
 
 You can also specify the stage (`local`, `staging`, or `production`) for each individual site, note that stages of individual sites overrides the global stage:
@@ -484,6 +486,10 @@ By default, HTTPS-PORTAL renews the certificate about 30 days before the expiry.
 RENEW_MARGIN_DAYS=30
 ```
 
+### Internationalized Domain Names (IDN)
+
+If you have non-ASCII characters in your domain, [convert it to an ASCII-Compatible Encoding (ACE) form](https://www.verisign.com/en_US/channel-resources/domain-registry-products/idn/idn-conversion-tool/index.xhtml) before using HTTPS-PORTAL.
+
 ## Advanced Usage
 
 ### Configure Nginx through Environment Variables
@@ -494,6 +500,7 @@ They correspond to the configuration options that you would normally put in `ngi
 The following are the available params with their default values:
 
 ```
+INDEX_FILES=index.html                  # A space-separated list of index file names to look for
 WORKER_PROCESSES=1
 WORKER_CONNECTIONS=1024
 KEEPALIVE_TIMEOUT=65
@@ -510,6 +517,7 @@ PROXY_SEND_TIMEOUT=60;
 PROXY_READ_TIMEOUT=60;
 ACCESS_LOG=off;
 ACCESS_LOG_INCLUDE_HOST=off;            # include vhost in access log (useful for goaccess => use log-format=VCOMBINED)
+REDIRECT_CODE=307                       # Was 301 by default until 1.20.1
 ```
 
 #### Websocket
@@ -585,6 +593,10 @@ server {
 	}
 }
 ```
+
+The variables `CUSTOM_NGINX_GLOBAL_HTTP_CONFIG_BLOCK` and `CUSTOM_NGINX_SERVER_PLAIN_CONFIG_BLOCK` can be used to add your own Nginx statements to the global `http` block or to the plaintext (non-SSL) `server` blocks.
+
+In the rare case that you want to change the handling of `/.well-known/acme-challenge/` requests, setting `ACME_CHALLENGE_BLOCK` will override the default configuration. Check out the [Nginx config templates](https://github.com/SteveLTN/https-portal/tree/master/fs_overlay/var/lib/nginx-conf) for more details.
 
 ### Change Configuration Dynamically
 
