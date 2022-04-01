@@ -3,7 +3,7 @@ FROM debian:buster-slim
 MAINTAINER K.Arima "arimakouyou@gmail.com"
 
 ARG NGINX_VERSION=1.21.6
-ARG NGINX__CHANGESET=7c2adf237091
+ARG NGINX_CHANGESET=7c2adf237091
 ARG OPENSSL_URL=https://github.com/quictls/openssl
 ARG OPENSSL_BRANCH=openssl-3.0.2+quic
 
