@@ -2,10 +2,10 @@ FROM debian:buster-slim
 
 MAINTAINER K.Arima "arimakouyou@gmail.com"
 
-ARG NGINX_VERSION=1.21.6
-ARG NGINX_CHANGESET=7c2adf237091
+ARG NGINX_VERSION=1.23.2
+#ARG NGINX_CHANGESET=7c2adf237091
 ARG OPENSSL_URL=https://github.com/quictls/openssl
-ARG OPENSSL_BRANCH=openssl-3.0.2+quic
+ARG OPENSSL_BRANCH=openssl-3.0.7+quic
 
 
 RUN mkdir -p /usr/local/src \
@@ -33,7 +33,8 @@ RUN mkdir -p /usr/local/src \
     && hg clone https://hg.nginx.org/nginx-quic /usr/local/src/nginx-quic \
     && hg clone http://hg.nginx.org/njs /usr/local/src/njs \
     && cd /usr/local/src/nginx-quic \
-    && hg update $NGINX_CHANGESET
+    # && hg update $NGINX_CHANGESET
+    && hg update quic
 
     RUN cd /usr/local/src/openssl \
     && ./config \
@@ -54,22 +55,20 @@ MAINTAINER K.Arima "arimakouyou@gmail.com"
 
 COPY --from=0 /etc/nginx /etc/nginx
 COPY --from=0 /usr/sbin/nginx* /usr/sbin/
-ARG  ARCH=amd64
-
 
 WORKDIR /root
 
 RUN apt-get update && \
-    apt-get install -y python ruby cron iproute2 apache2-utils logrotate wget inotify-tools && \
+    apt-get install -y python3 ruby cron iproute2 apache2-utils logrotate wget inotify-tools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Need this already now, but cannot copy remainder of fs_overlay yet
 COPY ./fs_overlay/bin/archname /bin/
 
-ENV S6_OVERLAY_VERSION v2.1.0.2
-ENV DOCKER_GEN_VERSION 0.7.4
-ENV ACME_TINY_VERSION 4.1.0
+ENV S6_OVERLAY_VERSION v2.2.0.3
+ENV DOCKER_GEN_VERSION 0.9.0
+ENV ACME_TINY_VERSION 5.0.1
 
 RUN sh -c "wget -q https://github.com/just-containers/s6-overlay/releases/download/$S6_OVERLAY_VERSION/s6-overlay-`archname s6-overlay`.tar.gz -O /tmp/s6-overlay.tar.gz" && \
     tar xzf /tmp/s6-overlay.tar.gz -C / && \
@@ -103,6 +102,6 @@ VOLUME /var/log/nginx
 EXPOSE 80 443 8080
 
 STOPSIGNAL SIGTERM
-
 #CMD ["nginx", "-g", "daemon off;"]
 ENTRYPOINT ["/init"]
+
