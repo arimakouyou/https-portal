@@ -12,6 +12,7 @@ events {
 http {
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
+    server_names_hash_bucket_size 128;
     ssl_protocols TLSv1.2 TLSv1.3;
 
     <% if ENV['ACCESS_LOG_INCLUDE_HOST'] == 'on' %>
@@ -131,5 +132,13 @@ http {
             listen      443 ssl default_server;
             ssl_reject_handshake on;
         }
+        server {
+          listen 8080;
+          location /nginx_status {
+            stub_status on;
+            access_log off;
+          }
+        }
+
     <% end %>
 }

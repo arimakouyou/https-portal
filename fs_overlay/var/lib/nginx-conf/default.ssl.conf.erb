@@ -16,22 +16,15 @@ server {
     ssl_certificate <%= domain.chained_cert_path %>;
     ssl_certificate_key <%= domain.key_path %>;
 
+    ssl_protocols TLSv1.2 TLSv1.3;
     ssl_session_cache shared:SSL:50m;
     ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256';
     ssl_prefer_server_ciphers on;
-#    ssl_session_timeout 1d;
-#    ssl_session_tickets off;
-
-    ssl_early_data on;
+   ssl_early_data on;
     proxy_set_header Early-Data $ssl_early_data;
 
     ssl_dhparam <%= dhparam_path %>;
     ssl_ecdh_curve X25519:prime256v1;
-
-    ssl_stapling on;
-    ssl_stapling_verify on;
-    resolver 8.8.8.8 8.8.4.4 valid=300s;
-    resolver_timeout 5s;
 
     # Send HSTS header if configured
     <% if ENV['HSTS_MAX_AGE'] %>
