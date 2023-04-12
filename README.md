@@ -159,11 +159,15 @@ stack.
 Note that HTTPS-PORTAL only listens to `example.com`, as you specified in the compose file.
 In order to make HTTPS-PORTAL respond to your connection, you need to either:
 
-* modify your `hosts` file to have `example.com` resolving to your docker host,
+* modify your `hosts` file to have `example.com` resolving to your docker host to 127.0.0.1 (or any other IP address pointing to your Docker host),
 
 or
 
 * set up DNSMasq on your computer/router. This method provides more flexibility.
+
+or
+
+* configure `DOMAINS: 'mysite.lvh.me` in `docker-compose.yml` instead of `example.com` (lvh.me is a wildcard DNS entry that resolves any second level name to 127.0.0.1) so than you can access https://mysite.lvh.me.
 
 Once you are done testing, you can deploy your application stack to the server.
 
@@ -576,6 +580,14 @@ You can also make it multi-line:
     	add_header Strict-Transport-Security "max-age=60" always;
     	auth_basic "Password";	
 ```
+When using variables, you need to escape them with $:
+
+```yaml
+  environment:
+    ...
+    CUSTOM_NGINX_GLOBAL_HTTP_CONFIG_BLOCK: |
+        limit_req_zone $$binary_remote_addr zone=one:10m rate=1000r/m;
+```
 
 The `CUSTOM_NGINX_SERVER_CONFIG_BLOCK` will be inserted after all other configuration blocks listed in section "Configure Nginx through Environment Variables", and it might conflict with other configurations.
 
@@ -617,7 +629,7 @@ You can either just override one single site's config or all sites' configs.
 
 #### Override just one single site's config
 
-In this case, you provide `<your-domain>.conf.erb` and `<your-domain>.conf.ssl.erb`. The former one takes care of the ownership verification from Let's Encrypt, and redirection to https URL. The latter one handles https connections.
+In this case, you provide `<your-domain>.conf.erb` and `<your-domain>.ssl.conf.erb`. The former one takes care of the ownership verification from Let's Encrypt, and redirection to https URL. The latter one handles https connections.
 
 For instance, to override both HTTPS and HTTP settings for `my.example.com`,
 you can launch HTTPS-PORTAL by:

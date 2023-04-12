@@ -2,7 +2,7 @@ FROM debian:buster-slim
 
 MAINTAINER K.Arima "arimakouyou@gmail.com"
 
-ARG NGINX_VERSION=1.21.6
+ARG NGINX_VERSION=1.23.1
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 ARG OPENSSL_BRANCH=openssl-3.0.2
 
@@ -50,7 +50,8 @@ ARG  ARCH=amd64
 
 WORKDIR /root
 
-RUN apt-get update && \
+RUN apt-get clean && \
+    apt-get update && \
     apt-get install -y python ruby cron iproute2 apache2-utils logrotate wget inotify-tools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -94,6 +95,10 @@ VOLUME /var/log/nginx
 EXPOSE 80 443 8080
 
 STOPSIGNAL SIGTERM
+
+# HEALTHCHECK --interval=5s --timeout=3s --start-period=10s --retries=3 CMD wget -q -O /dev/null http://localhost:80/ || exit 1
+
+HEALTHCHECK --interval=5s --timeout=1s --start-period=2s --retries=20 CMD   service nginx status || exit 1
 
 #CMD ["nginx", "-g", "daemon off;"]
 ENTRYPOINT ["/init"]
