@@ -48,6 +48,9 @@ RUN mkdir -p /usr/local/src \
     && make && make install \
     && mkdir -p /etc/nginx/conf.d
 
+    RUN echo /usr/local/lib64 > /etc/ld.so.conf.d/openssl.conf
+
+
 
 FROM debian:bullseye-slim
 
@@ -55,6 +58,11 @@ MAINTAINER K.Arima "arimakouyou@gmail.com"
 
 COPY --from=0 /etc/nginx /etc/nginx
 COPY --from=0 /usr/sbin/nginx* /usr/sbin/
+COPY --from=0 /usr/local/bin/openssl /usr/local/bin/openssl
+COPY --from=0 /usr/local/bin/c_rehash /usr/local/bin/c_rehash
+COPY --from=0 /usr/local/ssl /usr/local/ssl
+COPY --from=0 /usr/local/lib64 /usr/local/lib64
+COPY --from=0 /etc/ld.so.conf.d/openssl.conf /etc/ld.so.conf.d/openssl.conf
 
 WORKDIR /root
 
