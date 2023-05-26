@@ -8,8 +8,10 @@ upstream <%= domain.upstream_backend_name %> {
 
 server {
     listen 443 ssl http2;
+    listen 443 quic ;
     <% if ENV['LISTEN_IPV6'] && ENV['LISTEN_IPV6'].downcase == 'true' %>
     listen [::]:443 ssl http2;
+    listen [::]:443 quic ;
     <% end %>
     server_name <%= domain.name %>;
 
@@ -70,6 +72,7 @@ server {
         proxy_set_header Connection $connection_upgrade;
         proxy_read_timeout 2h;
         <% end %>
+        add_header Alt-Svc 'h3=":443"';
     }
     <% elsif domain.redirect_target_url %>
     location / {
@@ -79,6 +82,7 @@ server {
     location / {
         root   <%= domain.www_root %>;
         index  <%= ENV['INDEX_FILES'] || 'index.html' %>;
+        add_header Alt-Svc 'h3=":443"';
     }
     <% end %>
 }
