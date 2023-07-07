@@ -53,6 +53,7 @@ server {
         <%= ENV["CUSTOM_NGINX_#{domain.env_format_name}_CONFIG_BLOCK"] %>
     <% end %>
 
+    add_header Alt-Svc 'h3=":443"';
     <% if domain.upstream %>
     location / {
         <% if ENV['DYNAMIC_UPSTREAM'] && ENV['DYNAMIC_UPSTREAM'].downcase == 'true' %>
@@ -72,7 +73,6 @@ server {
         proxy_set_header Connection $connection_upgrade;
         proxy_read_timeout 2h;
         <% end %>
-        add_header Alt-Svc 'h3=":443"';
     }
     <% elsif domain.redirect_target_url %>
     location / {
@@ -82,7 +82,6 @@ server {
     location / {
         root   <%= domain.www_root %>;
         index  <%= ENV['INDEX_FILES'] || 'index.html' %>;
-        add_header Alt-Svc 'h3=":443"';
     }
     <% end %>
 }

@@ -1,8 +1,6 @@
 FROM debian:bullseye-slim
 
-MAINTAINER K.Arima "arimakouyou@gmail.com"
-
-ARG NGINX_VERSION=1.25.0
+ARG NGINX_VERSION=1.25.1
 #ARG NGINX_CHANGESET=7c2adf237091
 ARG OPENSSL_URL=https://github.com/quictls/openssl
 ARG OPENSSL_BRANCH=openssl-3.1.0+quic
@@ -52,8 +50,6 @@ RUN mkdir -p /usr/local/src \
 
 
 FROM debian:bullseye-slim
-
-MAINTAINER K.Arima "arimakouyou@gmail.com"
 
 COPY --from=0 /etc/nginx /etc/nginx
 COPY --from=0 /usr/sbin/nginx* /usr/sbin/
