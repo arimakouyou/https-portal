@@ -47,8 +47,6 @@ RUN mkdir -p /usr/local/src \
 
     RUN echo /usr/local/lib64 > /etc/ld.so.conf.d/openssl.conf
 
-
-
 FROM debian:bullseye-slim
 
 COPY --from=0 /etc/nginx /etc/nginx
@@ -68,6 +66,7 @@ RUN apt-get update && \
 
 # Need this already now, but cannot copy remainder of fs_overlay yet
 COPY ./fs_overlay/bin/archname /bin/
+COPY ./nginx /etc/init.d/
 
 ENV S6_OVERLAY_VERSION v2.2.0.3
 ENV DOCKER_GEN_VERSION 0.9.0
@@ -85,10 +84,7 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 
 RUN wget -q https://raw.githubusercontent.com/diafygi/acme-tiny/$ACME_TINY_VERSION/acme_tiny.py -O /bin/acme_tiny
 
-#RUN rm /etc/nginx/conf.d/default.conf /etc/crontab
-
 COPY ./fs_overlay /
-
 
 RUN groupadd -r nginx \
   && useradd -r -g nginx -s /bin/false -M nginx \
@@ -97,15 +93,13 @@ RUN groupadd -r nginx \
   && ln -sf /dev/stderr /var/log/nginx/error.log \
   && mkdir -p /var/cache/nginx && \
     chmod a+x /bin/* && \
-    chmod 0644 /etc/logrotate.d/nginx
+    chmod 0644 /etc/logrotate.d/nginx && \
+    chmod 755 /etc/init.d/nginx
 
 VOLUME /var/lib/https-portal
 VOLUME /var/log/nginx
 
-#EXPOSE 80 443 8080
 HEALTHCHECK --interval=5s --timeout=1s --start-period=2s --retries=20 CMD   service nginx status || exit 1
 
-#STOPSIGNAL SIGTERM
-#CMD ["nginx", "-g", "daemon off;"]
 ENTRYPOINT ["/init"]
 
