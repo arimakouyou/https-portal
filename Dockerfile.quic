@@ -1,9 +1,9 @@
 FROM debian:bullseye-slim
 
-ARG NGINX_VERSION=1.25.1
+ARG NGINX_VERSION=1.25.3
 #ARG NGINX_CHANGESET=7c2adf237091
 ARG OPENSSL_URL=https://github.com/quictls/openssl
-ARG OPENSSL_BRANCH=openssl-3.1.0+quic
+ARG OPENSSL_BRANCH=openssl-3.1.4+quic
 
 
 RUN mkdir -p /usr/local/src \
@@ -75,7 +75,7 @@ ENV ACME_TINY_VERSION 5.0.1
 RUN sh -c "wget -q https://github.com/just-containers/s6-overlay/releases/download/$S6_OVERLAY_VERSION/s6-overlay-`archname s6-overlay`.tar.gz -O /tmp/s6-overlay.tar.gz" && \
     tar xzf /tmp/s6-overlay.tar.gz -C / && \
     rm -rf /tmp/s6-overlay.tar.gz
-RUN sh -c "wget -q https://github.com/jwilder/docker-gen/releases/download/$DOCKER_GEN_VERSION/docker-gen-linux-`archname docker-gen`-$DOCKER_GEN_VERSION.tar.gz -O /tmp/docker-gen.tar.gz" && \
+RUN /bin/sh -c "wget -q https://github.com/jwilder/docker-gen/releases/download/$DOCKER_GEN_VERSION/docker-gen-linux-`archname docker-gen`-$DOCKER_GEN_VERSION.tar.gz -O /tmp/docker-gen.tar.gz" && \
     tar xzf /tmp/docker-gen.tar.gz -C /bin && \
     rm -rf /tmp/docker-gen.tar.gz
 

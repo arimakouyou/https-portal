@@ -1,2 +1,6 @@
 #!/usr/bin/with-contenv /usr/bin/execlineb
-/usr/bin/justc-envdir -I /var/lib/https-portal/dynamic-env /bin/setup
+#/usr/bin/justc-envdir -I /var/lib/https-portal/dynamic-env /bin/setup
+
+s6-envdir -I /var/lib/https-portal/dynamic-env /bin/setup
+
+
