@@ -133,6 +133,8 @@ http {
             listen      443 quic reuseport default_server;
             ssl_reject_handshake on;
         }
+    <% end %>
+
         server {
           listen 8080;
           location /nginx_status {
@@ -140,8 +142,7 @@ http {
             access_log off;
           }
         }
-
-    <% end %>
+    
 }
 
 stream {

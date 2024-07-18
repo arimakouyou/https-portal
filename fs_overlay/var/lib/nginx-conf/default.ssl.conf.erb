@@ -7,12 +7,13 @@ upstream <%= domain.upstream_backend_name %> {
 <% end %>
 
 server {
-    listen 443 ssl http2;
-    listen 443 quic ;
+    listen 443 ssl;
+    listen 443 quic;
     <% if ENV['LISTEN_IPV6'] && ENV['LISTEN_IPV6'].downcase == 'true' %>
-    listen [::]:443 ssl http2;
-    listen [::]:443 quic ;
+    listen [::]:443 ssl;
+    listen [::]:443 quic;
     <% end %>
+    http2 on;
     server_name <%= domain.name %>;
 
     ssl_certificate <%= domain.chained_cert_path %>;
@@ -28,8 +29,18 @@ server {
     ssl_dhparam <%= dhparam_path %>;
     ssl_ecdh_curve X25519:prime256v1;
 
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    resolver 8.8.8.8 8.8.4.4 valid=300s;
+
+    add_header Alt-Svc 'h3=":443"';
+
+
     # Send HSTS header if configured
-    <% if ENV['HSTS_MAX_AGE'] %>
+    <% if ENV['HSTS_PRELOAD'] %>
+       proxy_hide_header Strict-Transport-Security;
+       add_header Strict-Transport-Security 'max-age=63072000; includeSubDomains; preload';
+    <% elsif ENV['HSTS_MAX_AGE'] %>
        add_header Strict-Transport-Security "max-age=<%= ENV['HSTS_MAX_AGE'] %>" always;
     <% end %>
 
@@ -53,7 +64,6 @@ server {
         <%= ENV["CUSTOM_NGINX_#{domain.env_format_name}_CONFIG_BLOCK"] %>
     <% end %>
 
-    add_header Alt-Svc 'h3=":443"';
     <% if domain.upstream %>
     location / {
         <% if ENV['DYNAMIC_UPSTREAM'] && ENV['DYNAMIC_UPSTREAM'].downcase == 'true' %>

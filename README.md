@@ -11,6 +11,10 @@ automatically.
 Docker Hub page:
 [https://hub.docker.com/r/steveltn/https-portal/](https://hub.docker.com/r/steveltn/https-portal/)
 
+## Japanese README
+
+Thanks to [@yamada28go](https://github.com/yamada28go), there is a [Japanese version of this README](/README-ja.md) available. However, due to my inability to understand Japanese, I can't guarantee that the Japanese version is up-to-date.
+
 ## Table of Contents
 
 - [HTTPS-PORTAL](#https-portal)
@@ -99,8 +103,6 @@ https-portal:
   ports:
     - '80:80'
     - '443:443'
-  links:
-    - wordpress
   restart: always
   environment:
     DOMAINS: 'wordpress.example.com -> http://wordpress:80'
@@ -111,8 +113,6 @@ https-portal:
 
 wordpress:
   image: wordpress
-  links:
-    - db:mysql
 
 db:
   image: mariadb
@@ -596,7 +596,7 @@ In addition to the global `CUSTOM_NGINX_SERVER_CONFIG_BLOCK`, which applies to a
 ```
 # generated Nginx config:
 server {
-	listen 443 ssl http2;
+	listen 443 ssl;
 	... # (other configurations)
 	<%= CUSTOM_NGINX_SERVER_CONFIG_BLOCK %>
 	<%= CUSTOM_NGINX_<DOMAIN_NAME>_CONFIG_BLOCK %>
@@ -643,7 +643,7 @@ https-portal:
     - /path/to/https_config:/var/lib/nginx-conf/my.example.com.ssl.conf.erb:ro
 ```
 
-[This file](https://github.com/SteveLTN/https-portal/blob/master/fs_overlay/var/lib/nginx-conf/default.conf.erb) and [this file](https://github.com/SteveLTN/https-portal/blob/master/fs_overlay/var/lib/nginx-conf/default.ssl.conf.erb) are the default configuration files used by HTTPS-PORTAL.
+[This file](/fs_overlay/var/lib/nginx-conf/default.conf.erb) and [this file](/fs_overlay/var/lib/nginx-conf/default.ssl.conf.erb) are the default configuration files used by HTTPS-PORTAL.
 You can probably start by copying these files. You can either keep the variables or just hard-code the domain and upstream, etc.
 
 Another example can be found [here](/examples/custom_config).
