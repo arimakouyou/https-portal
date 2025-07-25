@@ -8,7 +8,7 @@ version: '3'
 
 services:
   https-portal:
-    image: steveltn/https-portal:1
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/https-portal:latest
     ports:
       - 80:80
       - 443:443
