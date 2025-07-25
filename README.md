@@ -15,6 +15,12 @@ Docker Hub page:
 
 Thanks to [@yamada28go](https://github.com/yamada28go), there is a [Japanese version of this README](/README-ja.md) available. However, due to my inability to understand Japanese, I can't guarantee that the Japanese version is up-to-date.
 
+## About Me  
+I’m a software engineer and an engineering manager with experience in cross-cultural development teams, particularly those with a presence in China. I specialize in bridging communication and culture gaps, optimizing workflows, and ensuring seamless collaboration across borders.  
+
+​**Interested in consulting?**  
+I’m available for tech consulting projects! Whether you need help with team alignment, process improvement, or technical guidance, I’d love to assist. Feel free to contact via [steve.wy.shao+consulting@gmail.com](mailto:steve.wy.shao+consulting@gmail.com) to discuss your needs.  
+
 ## Table of Contents
 
 - [HTTPS-PORTAL](#https-portal)
@@ -27,6 +33,7 @@ Thanks to [@yamada28go](https://github.com/yamada28go), there is a [Japanese ver
     - [Automatic Container Discovery](#automatic-container-discovery)
     - [Hybrid Setup with Non-Dockerized Apps](#hybrid-setup-with-non-dockerized-apps)
     - [Multiple Domains](#multiple-domains)
+    - [Custom Ports](#custom-ports)
     - [Multiple Upstreams](#multiple-upstreams)
     - [Serving Static Sites](#serving-static-sites)
     - [Share Certificates with Other Apps](#share-certificates-with-other-apps)
@@ -304,6 +311,38 @@ You can also specify the stage (`local`, `staging`, or `production`) for each in
 
 ```yaml
 DOMAINS: 'wordpress.example.com -> http://wordpress #local, gitlab.example.com #staging'
+```
+
+If you have multiple domains, consider using YAML multiline folding operator '>':
+```yaml
+https-portal:
+  # ...
+  environment:
+    DOMAINS: >
+      wordpress.example.com -> http://wordpress:80,
+      gitlab.example.com -> http://gitlab
+    OTHER_VARS: ...
+```
+
+It will make reading and managing multiple domains easier.
+
+### Custom Ports
+
+Due to Let's Encrypt's constraints, Port 80 must be used for verifying the domian. But you can use a different port than 443 for SSL traffic.
+
+```yaml
+https-portal:
+  # ...
+  ports:
+    - '80:80'
+    - '4343:4343' # Make sure to add the other ports you want to listen to
+    - '443:443'
+  environment:
+    # You can combine the same domain with different ports.
+    DOMAINS: >
+      wordpress.example.com:4343 -> http://wordpress:80,
+      wordpress.example.com:443 -> http://gitlab:80, 
+    OTHER_VARS: ...
 ```
 
 ### Multiple Upstreams
@@ -639,8 +678,8 @@ https-portal:
   # ...
   volumes:
     - https-portal-data:/var/lib/https-portal
-    - /path/to/http_config:/var/lib/nginx-conf/my.example.com.conf.erb:ro
-    - /path/to/https_config:/var/lib/nginx-conf/my.example.com.ssl.conf.erb:ro
+    - /path/to/http_config_file:/var/lib/nginx-conf/my.example.com.conf.erb:ro
+    - /path/to/https_config_file:/var/lib/nginx-conf/my.example.com.ssl.conf.erb:ro
 ```
 
 [This file](/fs_overlay/var/lib/nginx-conf/default.conf.erb) and [this file](/fs_overlay/var/lib/nginx-conf/default.ssl.conf.erb) are the default configuration files used by HTTPS-PORTAL.
@@ -732,7 +771,8 @@ obtain a new set of certificates.
 If you find HTTPS-PORTAL is not behaving as expected, try to reset the data volume:
 
 ```
-docker-compose down -v
+docker-compose down
+docker volume ls -q | grep https-portal-data # Delete the volume used by HTTPS-PORTAL
 docker-compose up
 ```
 
