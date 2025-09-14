@@ -29,9 +29,9 @@ server {
     ssl_dhparam <%= dhparam_path %>;
     ssl_ecdh_curve X25519:prime256v1;
 
-    ssl_stapling on;
-    ssl_stapling_verify on;
-    resolver 8.8.8.8 8.8.4.4 valid=300s;
+    #ssl_stapling on;
+    #ssl_stapling_verify on;
+    #resolver 8.8.8.8 8.8.4.4 valid=300s;
 
     add_header Alt-Svc 'h3=":443"';
 
